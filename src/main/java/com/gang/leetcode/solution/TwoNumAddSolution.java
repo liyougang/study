@@ -29,8 +29,6 @@ public class TwoNumAddSolution {
     }
 
     public ListNode solution(ListNode l1, ListNode l2){
-        ListNode currL1 = l1;
-        ListNode currL2 = l2;
         if(l1 == null && l2 == null){
             return null;
         }else if(l1 == null){
@@ -39,6 +37,8 @@ public class TwoNumAddSolution {
             return l1;
         }
 
+        ListNode currL1 = l1;
+        ListNode currL2 = l2;
         int temp;
         while(currL1 != null){
 
@@ -62,7 +62,7 @@ public class TwoNumAddSolution {
                        currL1.next = tempNode;
                        currL1 = currL1.next;
                    }else {
-                       currL1 = currL1.next;
+                       break;
                    }
                }
 
@@ -72,7 +72,6 @@ public class TwoNumAddSolution {
            }
 
             if(currL2 != null){
-
                 currL2 = currL2.next;
             }
         }
