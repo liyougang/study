@@ -2,6 +2,8 @@ package com.gang.leetcode.solution;
 
 import com.gang.leetcode.data.ListNode;
 
+import java.io.InputStream;
+
 /**
  * @author ligang
  * @desc  two num add

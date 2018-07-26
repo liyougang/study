@@ -11,10 +11,10 @@ package com.gang.leetcode.solution;
 public class LengthOfLongestSubstringSolution {
 
     public static void main(String[] args){
-        String str = "aszaaasdf123aa";
+        String str = "aa1";
         System.out.println("str:"+str);
 
-        int maxSize = new LengthOfLongestSubstringSolution().lengthOfLongestSubstring(str);
+        int maxSize = new LengthOfLongestSubstringSolution().lengthOfLongestSubstring2(str);
         System.out.println("maxSize:"+maxSize);
     }
     public int lengthOfLongestSubstring(String s){
@@ -40,6 +40,28 @@ public class LengthOfLongestSubstringSolution {
         if((currIndex -firstIndex) > maxSize){
             maxSize = currIndex -firstIndex;
         }
+        return maxSize;
+
+    }
+
+    public int lengthOfLongestSubstring2(String s){
+
+        if(s == null || "".equals(s)){
+            return 0;
+        }
+        int h =0;
+        int maxSize = 0;
+        boolean arr[] = new boolean[256];
+        for(int i=0; i<s.length();i++){
+            char c = s.charAt(i);
+            while(arr[c]){
+                arr[s.charAt(h)] = false;
+                h++;
+            }
+            arr[c] = true;
+            maxSize = Math.max(maxSize, i-h+1);
+        }
+
         return maxSize;
 
     }
