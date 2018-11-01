@@ -44,7 +44,16 @@ public class ThreeSumSolutionTwo {
         System.out.println("solution rst size:"+rst.size());
         System.out.println("solution rst:" +  JSON.toJSONString(rst));
     }
-
+    
+    /**
+     *
+     * @Description
+     *
+     * @param nums  数据集
+     * @return List 结果集
+     * @Author gang.li01
+     * @Date 2018/10/25 13:51
+     **/
     public List<List<Integer>> solution(int[] nums){
 
         // 1.sort
@@ -54,18 +63,34 @@ public class ThreeSumSolutionTwo {
 
         // find other two num
         for(int i = 0;i<nums.length; i++){
-            findOtherTwoNum(i, 0, nums.length-1, nums, rsList);
+            if(i == 0 || (i > 0 && nums[i] != nums[i-1])){
+                findOtherTwoNum(i, i+1, nums.length-1, nums, rsList);
+            }
         }
 
         return rsList;
     }
-
+    
+    /**
+     *
+     * @Description
+     *
+     * @param i
+     * @param low
+     * @param high
+     * @param nums
+     * @param rsList
+     * @return
+     * @Author gang.li01
+     * @Date 2018/10/25 13:49
+     **/
     private void findOtherTwoNum(int i, int low, int high, int[] nums, List<List<Integer>> rsList){
 
         int target = nums[i];
-        while(low < i && high > i){
+        while(low < high ){
 
             if(nums[low] + nums[high] + target == 0){
+
                 List<Integer> rst = new ArrayList<Integer>();
                 rst.add(nums[low]);
                 rst.add(nums[i]);
@@ -76,6 +101,22 @@ public class ThreeSumSolutionTwo {
                 }
 
                 high --;
+                while(low < high){
+                    if(high+1 < nums.length && nums[high] == nums[high+1]){
+                        high --;
+                    }else{
+                        break;
+                    }
+                }
+                low ++;
+                while(low < high){
+                    if(low > 0 && nums[low] == nums[low-1]){
+                        low ++;
+                    }else{
+                        break;
+                    }
+                }
+
             }else if(nums[low] + nums[high] + target > 0){
                 high --;
             }else if(nums[low] + nums[high] + target < 0){
@@ -83,6 +124,8 @@ public class ThreeSumSolutionTwo {
             }
         }
     }
+
+
 
     private boolean contains( List<List<Integer>> rsList, List<Integer> rst){
         for(List<Integer> list : rsList){
