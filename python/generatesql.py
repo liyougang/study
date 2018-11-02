@@ -13,7 +13,6 @@ sqltemplate = sqlTemplatePath + '//'+'sqltemplate.json'
 def copyArr(replaceArr, src):
 
     sqlArr = []
-    print('len')
     print(len(replaceArr))
     if len(replaceArr) > 0:
         for replaveVal in replaceArr:
@@ -39,33 +38,30 @@ def generateSqlLine(sqlArr, tableName):
         values = ','.join(arr)
         sqlLine = s.format(tablename=tableName, cols=cols, values=values) + '\n'
         sqlLineArr.append(sqlLine)
-        print("-------------------")
-        print(type(sqlLineArr))
-        print("sqlLineArr len:")
-        print(len(sqlLineArr))
-        print("-------------------")
     return sqlLineArr
 
 
 def generateSql(sqlTemplateName, custInfoList, productInfoList):
     sqlTemplateFile = sqlTemplatePath + '//' + sqlTemplateName + '.json'
+    sqlArr = []
+    tempArr = []
     with open(sqlTemplateFile, mode='r', encoding='UTF-8') as f:
         data = json.load(f)
-        tableName = tablename=data['TABLE']
+        tableName = data['TABLE']
         delSqlLine = delSql.format(tablename=tableName) + '\n'
 
         cols = data['COLS']
-
-        sqlArr = []
         sqlArr.extend(copyArr(custInfoList, cols))
-        tempArr = []
+
         for sqlItem in sqlArr:
              copyArr(productInfoList, sqlItem)
              tempArr.extend(copyArr(productInfoList, sqlItem))
-    print(generateSqlLine(tempArr, tableName))
-    print([delSqlLine].extend(generateSqlLine(tempArr, tableName)))
-    print([delSqlLine].extend(generateSqlLine(tempArr, tableName)))
-    return [delSqlLine].extend(generateSqlLine(tempArr, tableName))
+
+    tt = generateSqlLine(tempArr, tableName)
+    testArr = [delSqlLine]
+    print([].extend(tt))
+    testArr.extend(tt)
+    return testArr
 
 
 def writeToFile(fileName, arr):
@@ -84,10 +80,15 @@ def generate(sqltemplate):
         templateArr = []
         for template in data['templates']:
             templateArr = generateSql(template,data['custInfoList'], data['productInfoList'])
-            print("templateArrLen:")
-            print(len(generateSql(template,data['custInfoList'], data['productInfoList'])))
+            print("templateArrLen:-----")
+            print('test')
+            templateArr1 = generateSql(template,data['custInfoList'], data['productInfoList'])
+            print("templateArr1:")
+            print(templateArr1)
+            print('---test')
             print(templateArr)
             sqlArr.extend(templateArr)
+            print("------templateArrLen:-----")
         writeToFile(data['fileName'], sqlArr)
     print('generate succ')
 
