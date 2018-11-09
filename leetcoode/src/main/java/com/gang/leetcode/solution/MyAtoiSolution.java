@@ -1,10 +1,5 @@
 package com.gang.leetcode.solution;
 
-import sun.tools.java.SyntaxError;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author ligang
  * @desc
