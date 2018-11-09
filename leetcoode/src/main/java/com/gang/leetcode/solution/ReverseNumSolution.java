@@ -54,14 +54,4 @@ public class ReverseNumSolution {
         }
         return rst;
     }
-
-
-    public static void main(String[] args){
-//        int num =1534236469;
-        int num = -2147483412;
-        System.out.println("num:"+num);
-        ReverseNumSolution solution = new ReverseNumSolution();
-        System.out.println(solution.reverse(num));
-
-    }
 }
