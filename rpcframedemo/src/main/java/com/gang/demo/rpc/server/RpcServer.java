@@ -10,17 +10,8 @@
  */
 package com.gang.demo.rpc.server;
 
-import com.gang.demo.calculate.CalculateService;
-import com.gang.demo.rpc.InterfaceCall;
-import com.sun.corba.se.pept.encoding.OutputObject;
-import com.sun.corba.se.pept.protocol.MessageMediator;
-
-import java.io.*;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,102 +25,33 @@ public class RpcServer extends Thread{
     static  Map<String, Object> serversMap = new HashMap<String, Object>();
 
     private ServerSocket serverSocket;
-
-    public RpcServer(int port) throws IOException
-    {
+    public RpcServer(int port) throws IOException{
         serverSocket = new ServerSocket(port);
-        serverSocket.setSoTimeout(10000);
+        serverSocket.setSoTimeout(1000000);
     }
 
-    public void run()
-    {
-        while(true)
-        {
-            try
-            {
-                System.out.println("等待远程连接，端口号为：" + serverSocket.getLocalPort() + "...");
-                Socket server = serverSocket.accept();
-                System.out.println("远程主机地址：" + server.getRemoteSocketAddress());
-                DataInputStream in = new DataInputStream(server.getInputStream());
-                System.out.println(in.readUTF());
-                DataOutputStream out = new DataOutputStream(server.getOutputStream());
-                out.writeUTF("谢谢连接我：" + server.getLocalSocketAddress() + "\nGoodbye!");
-                server.close();
-            }catch(SocketTimeoutException s)
-            {
-                System.out.println("Socket timed out!");
-                break;
-            }catch(IOException e)
-            {
-                e.printStackTrace();
-                break;
-            }
-        }
+    public  void startServer(){
+
+       RpcServerTask rpcServerTask = new RpcServerTask(this);
+
+       rpcServerTask.run();
     }
 
-    public static void main(String[] args){
+    private  Map<String, Object> serviceMap = new HashMap<String, Object>();
 
-        int serverPort = 8181;
-
-        InterfaceCall interfaceCall = new InterfaceCall();
-
-        try
-        {
-            Thread t = new RpcServer(serverPort);
-            t.run();
-        }catch(IOException e)
-        {
-            e.printStackTrace();
-        }
-
-//        startServer(8181);
-
-//        try {
-//            ServerSocket ss = new ServerSocket(serverPort);
-//            System.out.println("启动服务器....");
-//            while(true){
-//                Socket s = ss.accept();
-//                System.out.println("客户端:" + s.getInetAddress().getLocalHost() + "已连接到服务器");
-//
-//                ObjectInputStream br = new ObjectInputStream(s.getInputStream());
-//                //读取客户端发送来的消息
-//                Object ob = br.readObject();
-//
-//                InterfaceCall interfaceCall1 = (InterfaceCall) ob;
-//                HandProcess handProcess = new HandProcess();
-//
-//                Class interfaceClazz = Class.forName(interfaceCall1.getInterfaceName());
-//
-//                Object object = Proxy.newProxyInstance(interfaceClazz.getClassLoader(), new Class[]{interfaceClazz}, handProcess);
-//                Method method =getMethod(interfaceClazz.getMethods(), interfaceCall.getMethodName(), interfaceCall.getParams());
-//
-//                try {
-//                    Object rs = handProcess.invoke(object, method, interfaceCall.getParams());
-//                    System.out.println("客户端："+ rs.toString());
-//                    ObjectOutputStream oo = new ObjectOutputStream(s.getOutputStream());
-//                    oo.writeObject(rs);
-//
-//                    oo.flush();
-//                } catch (Throwable throwable) {
-//                    throwable.printStackTrace();
-//                }
-//            }
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-
+    public void addService(String interfaceName, Object obj){
+        serversMap.put(interfaceName, obj);
     }
 
-    private static  Method getMethod(Method[] methods, String methodName, Object[] params){
-        for(Method method : methods){
-            if(method.getName().equals(methodName) && params.length == method.getParameterTypes().length){
-                return method;
-            }
-        }
+    public  Object findServiceByName(String interfaceName){
+        return serversMap.get(interfaceName);
+    }
 
-        throw new RuntimeException(methodName + " is not exist");
+    public ServerSocket getServerSocket() {
+        return serverSocket;
+    }
+
+    public void setServerSocket(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
     }
 }

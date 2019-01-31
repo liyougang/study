@@ -10,15 +10,23 @@
  */
 package com.gang.demo.consumer;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
- * @className CallService
+ * @className Test
  * @description
  * @author gang.li01
- * @date 2019/1/29 17:52
+ * @date 2019/1/30 19:51
  */
-public class CallService {
+public class Test {
 
     public static void main(String[] args){
+        Map<String, String> maps = new HashMap<String,String>();
+        maps.put("1","test");
 
+        Set<String> keySet = maps.keySet();
+        keySet.add("12");
     }
 }

@@ -14,6 +14,7 @@ import com.gang.demo.rpc.InterfaceCall;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.*;
 
 /**
  * @className RpcClient
@@ -23,58 +24,69 @@ import java.net.Socket;
  */
 public class RpcClient {
 
-    public static void main(String[] args) throws Exception{
-        String interfaceName = "com.gang.demo.calculate.CalculateService";
-        String methodName = "add";
-        Object[] params = new Object[]{1, 2};
-        String serverIp = "127.0.0.1";
-        int serverPort = 8181;
+    private Map<String, List<InterfaceCall>> consumerServiceMap = new HashMap<String, List<InterfaceCall>>();
 
-        sendMessage(serverIp, serverPort);
+    public void consumerService(String interfaceName, InterfaceCall interfaceCall){
+       List<InterfaceCall> interfaceCallsList = consumerServiceMap.get(interfaceName);
+       if(interfaceCallsList == null){
+           interfaceCallsList = new ArrayList<InterfaceCall>();
+           consumerServiceMap.put(interfaceName, interfaceCallsList);
+       }
 
-//        try {
-//            InterfaceCall interfaceCall = new InterfaceCall();
-//            interfaceCall.setInterfaceName(interfaceName);
-//            interfaceCall.setMethodName(methodName);
-//            interfaceCall.setParams(params);
-//
-//
-//            Socket socket = new Socket(serverIp, serverPort);
-//
-//            //构建IO
-//            InputStream is = socket.getInputStream();
-//            OutputStream os = socket.getOutputStream();
-//
-//            ObjectOutputStream obs = new ObjectOutputStream(os);
-//
-//            obs.writeObject(interfaceCall);
-//
-//            obs.flush();
-//
-//            //读取服务器返回的消息
-//            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-//            String mess = br.readLine();
-//            System.out.println("服务器：" + mess);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+       interfaceCallsList.add(interfaceCall);
     }
 
-    private static void sendMessage(String serverName, int port) {
+    public  void sendMessage(String serviceName, String methodName, Object[] params) {
         try {
-            System.out.println("连接到主机：" + serverName + " ，端口号：" + port);
-            Socket client = new Socket(serverName, port);
-            System.out.println("远程主机地址：" + client.getRemoteSocketAddress());
-            OutputStream outToServer = client.getOutputStream();
-            DataOutputStream out = new DataOutputStream(outToServer);
+            InterfaceCall interfaceCall = routeAddress(serviceName);
+            interfaceCall.setParams(params);
+            interfaceCall.setMethodName(methodName);
 
-            out.writeUTF("Hello from " + client.getLocalSocketAddress());
-            InputStream inFromServer = client.getInputStream();
-            DataInputStream in = new DataInputStream(inFromServer);
-            System.out.println("服务器响应： " + in.readUTF());
-            client.close();
-        } catch (IOException e) {
+            String address = interfaceCall.getAddress();
+            String[] ipAndPort = address.split(":");
+
+            String ip = ipAndPort[0];
+
+            int port = Integer.valueOf(ipAndPort[1]);
+
+            System.out.println("连接到主机：" + ip + " ，端口号：" + port);
+            Socket client = new Socket(ip, port);
+            System.out.println("远程主机地址：" + client.getRemoteSocketAddress());
+
+
+            Socket socket = new Socket(ip, port);
+
+            writeObj(interfaceCall, socket);
+
+            Object rst = readObj(socket);
+
+            System.out.print("rs :"+rst.toString());
+            System.out.print("服务器响应");
+
+
+           // client.close();
+        } catch (Throwable e) {
             e.printStackTrace();
         }
+    }
+
+    private InterfaceCall routeAddress(String serviceName){
+        List<InterfaceCall> interfaceCalls = consumerServiceMap.get(serviceName);
+
+        return interfaceCalls.get(0);
+    }
+
+    private  void writeObj(InterfaceCall interfaceCall ,Socket s) throws IOException {
+        ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+        os.writeObject(interfaceCall);
+        os.flush();
+        os.close();
+    }
+
+    private Object readObj(Socket s) throws Exception{
+       ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
+       Object obj = ois.readObject();
+
+       return obj;
     }
 }

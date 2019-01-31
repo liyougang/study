@@ -29,6 +29,9 @@ public class InterfaceCall implements Serializable {
 
     private Object[] params;
 
+    private String address;
+
+
     public String getInterfaceName() {
         return interfaceName;
     }
@@ -53,12 +56,21 @@ public class InterfaceCall implements Serializable {
         this.params = params;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     public String toString() {
         return "InterfaceCall{" +
                 "interfaceName='" + interfaceName + '\'' +
                 ", methodName='" + methodName + '\'' +
                 ", params=" + Arrays.toString(params) +
+                ", address='" + address + '\'' +
                 '}';
     }
 }
