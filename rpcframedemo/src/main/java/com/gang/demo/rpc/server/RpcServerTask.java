@@ -45,17 +45,11 @@ public class RpcServerTask implements Runnable{
                 Object clientObj = readObject(server);
 
                 InterfaceCall interfaceCall = decode(clientObj);
-
                 Object rs = processService(interfaceCall);
 
                 writeObj(rs, server);
 
                 System.out.print("process end");
-
-//                DataInputStream in = new DataInputStream(server.getInputStream());
-//                System.out.println(in.readUTF());
-//                DataOutputStream out = new DataOutputStream(server.getOutputStream());
-//                out.writeUTF("谢谢连接我：" + server.getLocalSocketAddress() + "\nGoodbye!");
 
               //  server.close();
             }catch(SocketTimeoutException s)

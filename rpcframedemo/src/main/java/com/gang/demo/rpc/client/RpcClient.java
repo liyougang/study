@@ -50,9 +50,6 @@ public class RpcClient {
             int port = Integer.valueOf(ipAndPort[1]);
 
             System.out.println("连接到主机：" + ip + " ，端口号：" + port);
-            Socket client = new Socket(ip, port);
-            System.out.println("远程主机地址：" + client.getRemoteSocketAddress());
-
 
             Socket socket = new Socket(ip, port);
 
@@ -64,7 +61,7 @@ public class RpcClient {
             System.out.print("服务器响应");
 
 
-           // client.close();
+            socket.close();
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -80,7 +77,7 @@ public class RpcClient {
         ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
         os.writeObject(interfaceCall);
         os.flush();
-        os.close();
+      //  os.close();
     }
 
     private Object readObj(Socket s) throws Exception{
