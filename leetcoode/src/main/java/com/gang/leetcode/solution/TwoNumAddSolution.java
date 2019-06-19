@@ -59,7 +59,7 @@ public class TwoNumAddSolution {
                 carry = 0;
             }
 
-            if(currL1.next == null && (currL2 !=null || carry > 0 )){
+            if(currL1.next == null && carry > 0){
                 currL1.next = new ListNode(0);
             }
             currL1 = currL1.next;
