@@ -42,42 +42,28 @@ public class TwoNumAddSolution {
         ListNode currL1 = l1;
         ListNode currL2 = l2;
         int temp;
-        while(currL1 != null){
-
+        int carry = 0;
+        while((currL1 != null ||  currL2 !=null)){
             if(currL2 != null){
-                temp = currL1.val + currL2.val;
-                currL1.val = temp % 10;
-            }else{
-                temp = currL1.val;
-                currL1.val = temp % 10;
-            }
-
-            ListNode tempNode = currL1.next;
-            if(tempNode == null){
-               if(temp >= 10){
-                   tempNode = new ListNode(temp / 10);
-                   currL1.next = tempNode;
-                   currL1 = currL1.next;
-               }else{
-                   if(currL2 != null && currL2.next != null){
-                       tempNode = new ListNode(0);
-                       currL1.next = tempNode;
-                       currL1 = currL1.next;
-                   }else {
-                       break;
-                   }
-               }
-
-           }else{
-               currL1 = currL1.next;
-               currL1.val = currL1.val + temp / 10;
-           }
-
-            if(currL2 != null){
+                temp = currL1.val + currL2.val + carry;
                 currL2 = currL2.next;
+            }else{
+                temp = currL1.val + carry;
             }
-        }
 
+            if(temp >= 10){
+                currL1.val =temp - 10;
+                carry = 1;
+            }else{
+                currL1.val = temp;
+                carry = 0;
+            }
+
+            if(currL1.next == null && (currL2 !=null || carry > 0 )){
+                currL1.next = new ListNode(0);
+            }
+            currL1 = currL1.next;
+        }
         return l1;
     }
 
